@@ -11,6 +11,9 @@ sources and return it as JSON to the calle
 - Redis
 - Docker
 
+## Tech used for testing
+- Insomina `https://insomnia.rest/`
+
 ## Future improvements
 - Unit tests using mock for redis db and redsky api call
 - Separate GET and PUT functions from main.go into a handler file
