@@ -20,12 +20,16 @@ func main() {
 
 	r.GET("/products/:id", getProductByID)
 	r.PUT("/products/:id", updateProductByID)
-	r.GET("/health", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "Healthy"})
-	})
+	r.GET("/health", getHealth)
 	r.Run(":8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
 
+func getHealth(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Healthy"})
+}
+
+// getProductByID handles GET calls and returns product details including pricing info in JSON format
+// returns 404 if product not found
 func getProductByID(c *gin.Context) {
 	var id string
 	id = c.Param("id")
@@ -47,6 +51,7 @@ func getProductByID(c *gin.Context) {
 	}
 }
 
+// updateProductByID handles check if product is valid from redsky before updating pricing info in Redis
 func updateProductByID(c *gin.Context) {
 	var id string
 	var pricing models.RespBody
@@ -57,7 +62,6 @@ func updateProductByID(c *gin.Context) {
 		return
 	}
 	// binding input json from PUT request call
-
 	if err := c.ShouldBindBodyWith(&pricing.Data, binding.JSON); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -69,9 +73,9 @@ func updateProductByID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, fmt.Sprintf("Product %s has been updated", id))
-	//c.JSON(http.StatusOK, updateProductFromRedsky(id).Data)
 }
 
+// getProductIDFromRedsky calls Redsky API and returns response in struct format
 func getProductIDFromRedsky(id string) *models.RespBody {
 	var response models.RespBody
 	qId := fmt.Sprintf("https://redsky-uat.perf.target.com/redsky_aggregations/v1/redsky/case_study_v1?key=3yUxt7WltYG7MFKPp7uyELi1K40ad2ys&tcin=%s", id)
@@ -90,23 +94,3 @@ func getProductIDFromRedsky(id string) *models.RespBody {
 	}
 	return &response
 }
-
-//func updateProductFromRedsky(id string) *models.RespBody {
-//	//var body models.RespBody
-//	//body.Data.Product.Tcin = id
-//	//body.Data.Product.Item.CurrentPrice.Value = "12.9"
-//	//var respBody models.RespBody
-//	//qId := fmt.Sprintf("https://redsky-uat.perf.target.com/redsky_aggregations/v1/redsky/case_study_v1?key=3yUxt7WltYG7MFKPp7uyELi1K40ad2ys&tcin=%s", id)
-//	//payload, err := json.Marshal(body)
-//	//if err != nil {
-//	//	return nil
-//	//}
-//	//resp, err := http.NewRequest(http.MethodPut, qId, bytes.NewBuffer(payload))
-//	//defer resp.Body.Close()
-//	//
-//	//resBody, err := ioutil.ReadAll(resp.Body)
-//	//if err := json.Unmarshal(resBody, &respBody); err != nil { // Parse []byte to go struct pointer
-//	//	log.Fatal("Can not unmarshal JSON")
-//	//}
-//	return &respBody
-//}

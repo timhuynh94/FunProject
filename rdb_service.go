@@ -22,7 +22,7 @@ var (
 func NewRdbClient() *RDBService {
 	// Connect to REDIS DB for local storage of product details
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     ":6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
@@ -38,7 +38,6 @@ func (rdb *RDBService) getProductFromRedis(id string) (*models.RespBody, error) 
 	val, err := rdb.client.Get(ctx, id).Result()
 
 	if err != nil {
-		//log.Fatal("Unable to retrieve product from Redis ", err)
 		return nil, ErrNil
 	}
 	unmarshalErr := json.Unmarshal([]byte(val), &v)
@@ -55,7 +54,6 @@ func (rdb *RDBService) setProductToRedis(id string, val models.RespBody) error {
 	}
 	err := rdb.client.Set(ctx, id, v, 0).Err()
 	if err != nil {
-		//log.Fatal("Unable to store product in Redis ", err)
 		return err
 	}
 	return nil

@@ -1,5 +1,5 @@
 # Start from golang base image
-FROM golang:alpine as builder
+FROM golang:1.19 as builder
 
 # Enable go modules
 ENV GO111MODULE=on
