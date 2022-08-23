@@ -63,7 +63,7 @@ go test -v server.go main.go handlers_test.go  -covermode=count  -coverprofile=.
     ├── docker-compose.yml
     ├── Dockerfile
     ├── go.mod
-    ├── handlers_test.go
+    ├── main_test.go
     ├── main.go
     └── README.md
 ```
